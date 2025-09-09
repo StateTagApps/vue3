@@ -5,7 +5,7 @@
   "scripts": {
     "serve": "vite",
     "build": "vite build",
-    "deploy": "git pull && yarn build && git add . && git commit -m 'deploy' && git origin master"
+    "deploy": "git -C dist pull && yarn build && git -C dist add . && git -C dist commit -m 'deploy' && git -C dist push --force origin master"
   },
   "dependencies": {
     "pinia": "^3.0.3",
