@@ -30,7 +30,7 @@ export default defineConfig({
     },
     build: {
         outDir: 'dist',
-        emptyOutDir: true,
+        emptyOutDir: false,
         rollupOptions: {
             input: resolve(__dirname, 'src/main.js'),
             output: {
