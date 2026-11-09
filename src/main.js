@@ -10,12 +10,13 @@ import {installNebula} from './sta/nebula';
 import {installRouter} from './sta/router';
 import {injectStyles} from './sta/styles';
 import {registerElements} from './sta/element';
+import {uuid} from './sta/util';
 import manifest from './x-html/manifest';
 
 const sta = bootConfig();
 
 sta.version = __STA_VERSION__;
-sta.uuid = () => crypto.randomUUID();
+sta.uuid = uuid;
 sta.instanceId = sta.uuid(); // this page load, e.g. to ignore our own nebula commands
 sta.bootedAt = Date.now();
 

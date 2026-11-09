@@ -4,7 +4,7 @@
 //   socket — src is an event, locus a path into the payload (read)
 //   nebula — locus is a key in the nebula room     (read/write)
 // Sources for the same api src / socket event / nebula key are shared by every tag that uses them.
-import {computed, ref, shallowRef} from 'vue';
+import {computed, onBeforeUnmount, ref, shallowRef} from 'vue';
 import {read, write} from './store';
 import {socketConnected} from './socket';
 import {get} from './util';
@@ -13,6 +13,7 @@ export const sourceProps = {
     locus: {type: String, default: null},
     src: {type: String, default: null},
     service: {type: String, default: 'state'},
+    refresh: {type: Number, default: 0}, // service="api" only: refetch every N seconds; 0 = never
     connectingMsg: {type: String, default: 'connecting...'},
     waitingMsg: {type: String, default: 'waiting...'}
 };
@@ -36,16 +37,22 @@ const remote = {
         }
 
         return sharedSource('api', props.src, source => {
-            sta.$api(props.src, {caller: 'source', key: 'source:' + props.src})
+            // A refetch cancels one still in flight (same key); the cancelled one leaves the source alone.
+            source.fetch = () => sta.$api(props.src, {caller: 'source', key: 'source:' + props.src})
                 .then(response => {
                     source.data.value = response.data;
+                    source.error.value = null;
+                    source.loading.value = false;
                 })
                 .catch(error => {
+                    if (error.name === 'AbortError') {
+                        return;
+                    }
                     source.error.value = error.message;
-                })
-                .finally(() => {
                     source.loading.value = false;
                 });
+
+            source.fetch();
         });
     },
 
@@ -88,6 +95,18 @@ export function useSource(props) {
                 throw new Error(`STA: unknown service "${service}" (use state, api, socket or nebula).`);
             }
             source = remote[service](sta, props);
+        }
+
+        if (props.refresh) {
+            if (service !== 'api') {
+                throw new Error(`STA: refresh only applies to service="api" (this tag uses "${service}").`);
+            }
+            if (!(props.refresh > 0)) {
+                throw new Error(`STA: refresh must be a number of seconds, got "${props.refresh}".`);
+            }
+
+            const timer = setInterval(source.fetch, props.refresh * 1000);
+            onBeforeUnmount(() => clearInterval(timer));
         }
     } catch (error) {
         setupError = error.message;

@@ -42,6 +42,20 @@ test('api: one source feeds every tag, each with its own locus', async t => {
     await t.expect(Selector('x-text-html[service="api"][locus="fr"]').innerText).eql('Bonjour');
 });
 
+test('api: refresh="N" refetches every N seconds; no refresh means one request', async t => {
+    const countRequests = ClientFunction(() =>
+        performance.getEntriesByType('resource').filter(e => e.name.includes('TextHtml.json')).length);
+
+    await t.expect(Selector('x-text-html[service="api"][locus="en"]').innerText).eql('Hello');
+    await t.wait(1500);
+    await t.expect(countRequests()).eql(1);
+
+    await addTag('<x-text-html service="api" src="/HelloWorld/TextHtml.json" locus="fr" refresh="1"></x-text-html>');
+    await t.wait(2600);
+    await t.expect(countRequests()).gte(3);
+    await t.expect(Selector('#test-holder').innerText).eql('Bonjour');
+});
+
 test('socket: connects, pushes timecast, global watcher writes state', async t => {
     // The demo label ends in &nbsp;, so match any whitespace.
     await t.expect(Selector('x-socket-status').innerText).match(/^Socket Status:\s+connected$/, {timeout: 8000});

@@ -52,6 +52,7 @@ The runtime validates the app layer at boot and throws on anything missing.
 | `nebula` | — | key in the nebula room |
 
 Tags reading the same api `src`, socket event or nebula key share one source.
+An api source is fetched once; add `refresh="30"` to refetch every 30 seconds (default `0` = never).
 Errors render inside the tag (`[STA: locus "msg.typo" is not declared…]`).
 
 ## Tags
