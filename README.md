@@ -3,7 +3,7 @@
 Custom HTML tags that read and write state, call APIs, and receive socket and nebula (gun.js) pushes.
 A backend developer hands designers the tags plus a few script tags; designers build the GUI in plain HTML.
 
-This is the Vue 3 + Vite port of [STA for Vue 2](../vue).
+This is the Vue 3 + Vite port of [STA for Vue 2](https://github.com/StateTagApps/vue).
 
 ```html
 <x-text-html locus="msg.en"></x-text-html>
