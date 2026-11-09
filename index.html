@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+    <link rel="icon" type="image/png" sizes="32x32" href="//favicon.StateTagApps.com/favicon-32x32.png">
+
+    <title>STA HelloWorld · Vue 3</title>
+
+    <link rel="stylesheet" href="/css/custom.css">
+
+    <!-- App layer: written per running instance -->
+    <script src="/js/sta-config.js"></script>
+    <script src="/js/sta-state.js"></script>
+    <script src="/js/sta-api.js"></script>
+    <script src="/js/sta-socket.js"></script>
+    <script src="/js/sta-nebula.js"></script>
+    <script src="/js/sta-io.js"></script>
+
+    <!-- Runtime -->
+    <script type="module" src="/src/main.js"></script>
+</head>
+<body onload="stateTagApp.$write('sta.nebulaId', 'demo');">
+<x-api-progress></x-api-progress>
+<x-undo></x-undo>
+<x-modal></x-modal>
+
+<h1>State Example</h1>
+<code>
+    <x-text-html service="state" locus="msg"></x-text-html>
+</code>
+<p>
+    <x-text-html service="state" locus="msg.en"></x-text-html>
+    ,
+    <x-text-html service="state" locus="msg.sp"></x-text-html>
+    ,
+    <x-text-html service="state" locus="msg.fr"></x-text-html>
+</p>
+
+<p><i>Please open your browser's dev console to see state watchers firing.</i></p>
+
+<x-input locus="msg.en"></x-input>
+<br/>
+<x-input locus="msg.sp"></x-input>
+<br/>
+<x-input locus="msg.fr"></x-input>
+<br/>
+<p>
+    <a href="index.html">Try reloading, your state changes will persist.</a>
+</p>
+<button onclick="stateTagApp.reset()">reset state</button>
+<hr/>
+
+<h1>API Example</h1>
+
+<code>
+    <x-text-html service="api" src="/HelloWorld/TextHtml.json"></x-text-html>
+</code>
+
+<h1>
+    <x-text-html service="api" src="/HelloWorld/TextHtml.json" locus="en"></x-text-html>
+    ,
+    <x-text-html service="api" src="/HelloWorld/TextHtml.json" locus="es"></x-text-html>
+    ,
+    <x-text-html service="api" src="/HelloWorld/TextHtml.json" locus="fr"></x-text-html>
+</h1>
+
+<hr/>
+
+<h1>Socket Example</h1>
+<x-socket-status>Socket Status:&nbsp;</x-socket-status>
+
+<code>
+    <x-text-html service="socket" src="timecast" waiting-msg="Waiting for push data to arrive."></x-text-html>
+</code>
+<p>
+    <x-text-html service="socket" src="timecast" locus="stamp"></x-text-html>
+</p>
+<p>
+    Global socket watcher writing to state (rolex):
+    <x-text-html locus="rolex"></x-text-html>
+</p>
+
+<h1>Nebula Service Demo</h1>
+<p>Experimental service for connecting your STA to its peers around the world at gaming speed. If you would like to play with it
+    then open this page in your <b>secondary browser</b>. You will see that the text is shared across the nebula like magic.</p>
+<p>This service is experimental because some browsers do not intake data when they are running in the background. This service is
+    only reliable when the target browser is the front/focused running application.</p>
+<code>
+    <x-qr style="float: right;" service="nebula" locus="demo"></x-qr>
+    <x-input service="nebula" locus="demo"></x-input>
+    Whatever people type here will appear in all instances of the STA worldwide in realtime:<br/>
+    <b>
+        <x-text-html service="nebula" locus="demo"></x-text-html>
+    </b>
+</code>
+
+<h1>Static QR Code Example</h1>
+<p>Pairing link for this instance's nebula room:</p>
+<x-qr service="state" locus="sta.nebulaId" template="{stateTagApp.base}pair/{value}"></x-qr>
+<hr/>
+
+<h1>Undo Example</h1>
+<p>The request waits 5 seconds. The undo pill at the top cancels it.</p>
+<x-progress-button loading-locus="sta.undo.pending" onclick="stateTagApp.commands.loadHelloWithUndo()">Load "Hello" with undo</x-progress-button>
+<p>Result: <x-text-html locus="hello" fallback="(nothing loaded yet)"></x-text-html></p>
+<hr/>
+
+<h1>Modal Example</h1>
+<button onclick="stateTagApp.commands.showDemoModal()">Open modal with a tag inside</button>
+<button onclick="stateTagApp.commands.showModalError()">Open modal with an error</button>
+<hr/>
+
+<h1>i18n Example</h1>
+<p>UI language: <x-lang></x-lang></p>
+<p>
+    Translated: <x-text-html locus="i18nDemo.greeting" filters='[{"name":"translation"}]'></x-text-html>
+    · Missing translation shows its key: <x-text-html locus="i18nDemo.untranslated" filters='[{"name":"translation"}]'></x-text-html>
+</p>
+<x-lang-input locus="user.lang" name="language"></x-lang-input>
+<hr/>
+
+<h1>Inputs Example</h1>
+<x-input locus="form.name" name="name" required maxlength="40"></x-input>
+<x-input-number locus="form.age" name="age" min="0" max="130"></x-input-number>
+<x-input-multiline locus="form.notes" name="notes" rows="2"></x-input-multiline>
+<x-input-date locus="form.birthday" name="birthday"></x-input-date>
+<x-currency-input locus="form.currency" name="currency"></x-currency-input>
+<x-debug locus="form"></x-debug>
+<hr/>
+
+<h1>Formatters Example</h1>
+<p>Number format: <x-number-format locus="langpack.numberFormat"></x-number-format></p>
+<p>
+    form.amount →
+    <x-text-html locus="form.amount" filters='[{"name":"numberFormat"}]'></x-text-html>
+    · whole: <x-text-html locus="form.amount" filters='[{"name":"numberFormat","args":[false]}]'></x-text-html>
+    · short: <x-text-html locus="form.amount" filters='[{"name":"k"}]'></x-text-html>
+</p>
+<hr/>
+
+<h1>Badge &amp; Tag-specs Example</h1>
+<p>Inbox <x-badge locus="badges.inbox"></x-badge> <x-input-number locus="badges.inbox" name="inbox"></x-input-number></p>
+<x-text-html locus="msg.en" is-html tag-specs="h3.demo-heading,span"></x-text-html>
+</body>
+</html>
